@@ -7,7 +7,7 @@ contract HomeInventory {
     struct Item {
         string name;
         string description;
-        uint256 purchaseDate; // Pass Unix timestamp here
+        uint256 purchaseDate;
         uint256 purchasePrice;
         string category;
         string model;
@@ -15,10 +15,9 @@ contract HomeInventory {
         string location;
         string condition;
         address owner;
-        uint256 id;
     }
 
-    Item[] public items;
+    mapping(uint256 => Item) public items;
     uint256 public nextItemId = 1;
 
     constructor() {
@@ -51,24 +50,20 @@ contract HomeInventory {
             serialNumber: _serialNumber,
             location: _location,
             condition: _condition,
-            owner: msg.sender,
-            id: nextItemId++
+            owner: msg.sender
         });
-        
-        items.push(newItem);
+
+        items[nextItemId] = newItem;
+        nextItemId++;
     }
 
-    function getItemsCount() external view returns (uint256) {
-        return items.length;
-    }
-
-    function getItem(uint256 _index) external view returns (Item memory) {
-        require(_index < items.length, "Invalid index");
-        return items[_index];
+    function getItem(uint256 _id) external view returns (Item memory) {
+        require(_id > 0 && _id < nextItemId, "Invalid item ID");
+        return items[_id];
     }
 
     function updateItem(
-        uint256 _index,
+        uint256 _id,
         string memory _name,
         string memory _description,
         uint256 _purchaseDate,
@@ -79,43 +74,42 @@ contract HomeInventory {
         string memory _location,
         string memory _condition
     ) external onlyOwner {
-        require(_index < items.length, "Invalid index");
-        require(items[_index].owner == msg.sender, "You don't own this item");
-        
-        items[_index].name = _name;
-        items[_index].description = _description;
-        items[_index].purchaseDate = _purchaseDate;
-        items[_index].purchasePrice = _purchasePrice;
-        items[_index].category = _category;
-        items[_index].model = _model;
-        items[_index].serialNumber = _serialNumber;
-        items[_index].location = _location;
-        items[_index].condition = _condition;
+        require(_id > 0 && _id < nextItemId, "Invalid item ID");
+        Item storage item = items[_id];
+        require(item.owner == msg.sender, "You don't own this item");
+
+        item.name = _name;
+        item.description = _description;
+        item.purchaseDate = _purchaseDate;
+        item.purchasePrice = _purchasePrice;
+        item.category = _category;
+        item.model = _model;
+        item.serialNumber = _serialNumber;
+        item.location = _location;
+        item.condition = _condition;
     }
 
-    function transferOwnership(uint256 _index, address _newOwner) external {
-        require(_index < items.length, "Invalid index");
-        require(items[_index].owner == msg.sender, "You don't own this item");
+    function transferOwnership(uint256 _id, address _newOwner) external {
+        require(_id > 0 && _id < nextItemId, "Invalid item ID");
+        Item storage item = items[_id];
+        require(item.owner == msg.sender, "You don't own this item");
 
-        items[_index].owner = _newOwner;
+        item.owner = _newOwner;
     }
 
     function getMyItems() external view returns (Item[] memory) {
         uint256 itemCount = 0;
 
-        // Count the number of items owned by the caller
-        for (uint256 i = 0; i < items.length; i++) {
+        for (uint256 i = 1; i < nextItemId; i++) {
             if (items[i].owner == msg.sender) {
                 itemCount++;
             }
         }
 
-        // Create an array to hold the owned items
         Item[] memory ownedItems = new Item[](itemCount);
         itemCount = 0;
 
-        // Populate the ownedItems array with owned items
-        for (uint256 i = 0; i < items.length; i++) {
+        for (uint256 i = 1; i < nextItemId; i++) {
             if (items[i].owner == msg.sender) {
                 ownedItems[itemCount] = items[i];
                 itemCount++;

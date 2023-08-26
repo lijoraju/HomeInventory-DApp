@@ -44,6 +44,7 @@ contract HomeInventory {
         _;
     }
 
+    // Create a new item
     function createItem(
         string memory _name,
         string memory _description,
@@ -55,6 +56,7 @@ contract HomeInventory {
         string memory _location,
         string memory _condition
     ) external onlyOwner {
+        // Initialize a new item
         Item memory newItem = Item({
             name: _name,
             description: _description,
@@ -69,15 +71,18 @@ contract HomeInventory {
             id: nextItemId
         });
 
+        // Store the new item
         items[nextItemId] = newItem;
         ownershipHistory[nextItemId].push(msg.sender);
         nextItemId++;
     }
 
+    // Start an auction for an item
     function startAuction(uint256 _itemId, uint256 _basePrice, uint256 _durationInHours) external onlyOwner {
         require(_itemId > 0 && _itemId < nextItemId, "Invalid item ID");
         require(auctions[_itemId].endTime == 0, "Auction already started");
 
+        // Initialize a new auction
         auctions[_itemId] = Auction({
             itemId: _itemId,
             highestBidder: address(0),
@@ -90,11 +95,13 @@ contract HomeInventory {
         });
     }
 
+    // Set auto-renewal for an auction
     function setAutoRenew(uint256 _itemId, bool _autoRenew) external onlyOwner {
         require(_itemId > 0 && _itemId < nextItemId, "Invalid item ID");
         auctions[_itemId].autoRenew = _autoRenew;
     }
    
+    // Place a bid in an auction
     function placeBid(uint256 _itemId, uint256 _bidAmount) external payable {
         require(_itemId > 0 && _itemId < nextItemId, "Invalid item ID");
         Auction storage auction = auctions[_itemId];
@@ -109,11 +116,13 @@ contract HomeInventory {
             previousBidder.transfer(auction.depositedAmount); // Refund the previous bidder
         }
 
+        // Update auction details
         auction.highestBidder = msg.sender;
         auction.highestBid = _bidAmount;
         auction.depositedAmount = _bidAmount; // Deposit the bid amount
     }
 
+    // Finalize an auction
     function finalizeAuction(uint256 _itemId) external {
         require(_itemId > 0 && _itemId < nextItemId, "Invalid item ID");
         Auction storage auction = auctions[_itemId];
@@ -144,11 +153,13 @@ contract HomeInventory {
         }
     }
 
+    // Get details of an auction
     function getAuctionDetails(uint256 _itemId) external view returns (Auction memory) {
         require(_itemId > 0 && _itemId < nextItemId, "Invalid item ID");
         return auctions[_itemId];
     }
 
+    // Get active auction items
     function getAuctionItems() external view returns (Auction[] memory) {
         uint256 itemCount = 0;
 
@@ -171,11 +182,13 @@ contract HomeInventory {
         return auctionItems;
     }
 
+    // Get details of an item
     function getItem(uint256 _id) external view returns (Item memory) {
         require(_id > 0 && _id < nextItemId, "Invalid item ID");
         return items[_id];
     }
 
+    // Update item details
     function updateItem(
         uint256 _id,
         string memory _name,
@@ -192,6 +205,7 @@ contract HomeInventory {
         Item storage item = items[_id];
         require(item.owner == msg.sender, "You don't own this item");
 
+        // Update item details
         item.name = _name;
         item.description = _description;
         item.purchaseDate = _purchaseDate;
@@ -203,6 +217,7 @@ contract HomeInventory {
         item.condition = _condition;
     }
 
+    // Transfer ownership of an item
     function transferOwnership(uint256 _id, address _newOwner) external {
         require(_id > 0 && _id < nextItemId, "Invalid item ID");
         Item storage item = items[_id];
@@ -211,10 +226,12 @@ contract HomeInventory {
         // Check if the item's auction is not in progress
         require(auctions[_id].endTime == 0 || auctions[_id].endTime <= block.timestamp, "Auction in progress, cannot transfer ownership");
 
-        ownershipHistory[_id].push(_newOwner); // Record ownership change
+        // Record ownership change and update owner
+        ownershipHistory[_id].push(_newOwner);
         item.owner = _newOwner;
     }
 
+    // Get items owned by the caller
     function getMyItems() external view returns (Item[] memory) {
         uint256 itemCount = 0;
 
@@ -237,6 +254,7 @@ contract HomeInventory {
         return ownedItems;
     }
 
+    // Get ownership history of an item
     function getOwnershipHistory(uint256 _id) external view returns (address[] memory) {
         require(_id > 0 && _id < nextItemId, "Invalid item ID");
         return ownershipHistory[_id];

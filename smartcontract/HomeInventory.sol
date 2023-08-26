@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 contract HomeInventory {
     address public owner;
-    
+
     struct Item {
         string name;
         string description;
@@ -15,9 +15,11 @@ contract HomeInventory {
         string location;
         string condition;
         address owner;
+        uint256 id;
     }
 
     mapping(uint256 => Item) public items;
+    mapping(uint256 => address[]) public ownershipHistory; // Ownership history mapping
     uint256 public nextItemId = 1;
 
     constructor() {
@@ -50,10 +52,12 @@ contract HomeInventory {
             serialNumber: _serialNumber,
             location: _location,
             condition: _condition,
-            owner: msg.sender
+            owner: msg.sender,
+            id: nextItemId
         });
 
         items[nextItemId] = newItem;
+        ownershipHistory[nextItemId].push(msg.sender); // Record initial owner
         nextItemId++;
     }
 
@@ -94,6 +98,7 @@ contract HomeInventory {
         Item storage item = items[_id];
         require(item.owner == msg.sender, "You don't own this item");
 
+        ownershipHistory[_id].push(_newOwner); // Record ownership change
         item.owner = _newOwner;
     }
 
@@ -117,5 +122,10 @@ contract HomeInventory {
         }
 
         return ownedItems;
+    }
+
+    function getOwnershipHistory(uint256 _id) external view returns (address[] memory) {
+        require(_id > 0 && _id < nextItemId, "Invalid item ID");
+        return ownershipHistory[_id];
     }
 }

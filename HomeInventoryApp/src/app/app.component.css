@@ -1,0 +1,11 @@
+.mat-tab-group {
+    margin-bottom: 48px;
+}
+
+.app-title {
+    color: #810ec9;
+    display: flex;
+    justify-content: center;
+    font-family: Poppins, sans-serif;
+    margin-top: 8px;
+}

@@ -190,6 +190,9 @@ contract HomeInventory {
         Item storage item = items[_id];
         require(item.owner == msg.sender, "You don't own this item");
 
+        // Check if the item's auction is not in progress
+        require(auctions[_id].endTime == 0 || auctions[_id].endTime <= block.timestamp, "Auction in progress, cannot transfer ownership");
+
         ownershipHistory[_id].push(_newOwner); // Record ownership change
         item.owner = _newOwner;
     }

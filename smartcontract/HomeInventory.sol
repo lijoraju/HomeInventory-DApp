@@ -25,6 +25,8 @@ contract HomeInventory {
         uint256 basePrice;
         uint256 endTime;
         uint256 depositedAmount; // Deposited amount for the highest bid
+        bool autoRenew; // Auto-Renewal flag
+        uint256 startTime; // Start time of the auction
     }
 
     mapping(uint256 => Item) public items;
@@ -82,10 +84,17 @@ contract HomeInventory {
             highestBid: 0,
             basePrice: _basePrice,
             endTime: block.timestamp + _durationInHours * 1 hours,
-            depositedAmount: 0
+            depositedAmount: 0,
+            autoRenew: false,
+            startTime: block.timestamp // Set the start time
         });
     }
 
+    function setAutoRenew(uint256 _itemId, bool _autoRenew) external onlyOwner {
+        require(_itemId > 0 && _itemId < nextItemId, "Invalid item ID");
+        auctions[_itemId].autoRenew = _autoRenew;
+    }
+   
     function placeBid(uint256 _itemId, uint256 _bidAmount) external payable {
         require(_itemId > 0 && _itemId < nextItemId, "Invalid item ID");
         Auction storage auction = auctions[_itemId];
@@ -110,20 +119,29 @@ contract HomeInventory {
         Auction storage auction = auctions[_itemId];
         require(auction.endTime > 0, "Auction not started");
         require(auction.endTime <= block.timestamp, "Auction not ended");
-        require(auction.highestBidder != address(0), "No bids received");
-
+        
         Item storage item = items[_itemId];
         address payable winningBidder = payable(auction.highestBidder); // Convert to payable address
         uint256 depositedAmount = auction.depositedAmount;
 
         // Transfer ownership and remove from auction
         item.owner = winningBidder;
-        delete auctions[_itemId];
-
-        // Transfer deposited amount to new owner (current owner)
-        winningBidder.transfer(depositedAmount);
-
-        ownershipHistory[_itemId].push(winningBidder);
+        if (auction.autoRenew && auction.highestBidder == address(0)) {
+            uint256 durationInSeconds = auction.endTime - auction.startTime;
+            auctions[_itemId].endTime = block.timestamp + durationInSeconds;
+            auctions[_itemId].highestBidder = address(0);
+            auctions[_itemId].highestBid = 0;
+            auctions[_itemId].depositedAmount = 0;
+        } else {
+            delete auctions[_itemId]; // Remove auction
+        }
+        
+        if(auction.highestBidder != address(0))
+        {
+            // Transfer deposited amount to new owner (current owner)
+            winningBidder.transfer(depositedAmount);
+            ownershipHistory[_itemId].push(winningBidder);
+        }
     }
 
     function getAuctionDetails(uint256 _itemId) external view returns (Auction memory) {

@@ -5,6 +5,8 @@ import { AuctionManagementComponent } from './auction-management/auction-managem
 import { MyItemsComponent } from './my-items/my-items.component';
 import { AuctionItemsComponent } from './auction-items/auction-items.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
+import { CreateItemComponent } from './create-item/create-item.component';
+import { ItemDetailsComponent } from './item-details/item-details.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/main-menu', pathMatch: 'full' },
@@ -12,7 +14,9 @@ const routes: Routes = [
   { path: 'item-management', component: ItemManagementComponent },
   { path: 'auction-management', component: AuctionManagementComponent },
   { path: 'my-items', component: MyItemsComponent },
-  { path: 'auction-items', component: AuctionItemsComponent }
+  { path: 'auction-items', component: AuctionItemsComponent },
+  { path: 'create-item', component: CreateItemComponent },
+  { path: 'item-details', component: ItemDetailsComponent }
 ];
 
 @NgModule({

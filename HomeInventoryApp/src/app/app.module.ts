@@ -10,11 +10,18 @@ import { AuctionDetailsComponent } from './auction-details/auction-details.compo
 import { MyItemsComponent } from './my-items/my-items.component';
 import { AuctionItemsComponent } from './auction-items/auction-items.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
-import {MatTableModule} from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
 import { MainMenuComponent } from './main-menu/main-menu.component';
+import { CreateItemComponent } from './create-item/create-item.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { UpdateItemComponent } from './update-item/update-item.component';
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -25,7 +32,9 @@ import { MainMenuComponent } from './main-menu/main-menu.component';
     AuctionDetailsComponent,
     MyItemsComponent,
     AuctionItemsComponent,
-    MainMenuComponent
+    MainMenuComponent,
+    CreateItemComponent,
+    UpdateItemComponent
   ],
   imports: [
     BrowserModule,
@@ -34,7 +43,12 @@ import { MainMenuComponent } from './main-menu/main-menu.component';
     MatTabsModule,
     MatButtonModule,
     MatCardModule,
-    MatTableModule
+    MatTableModule,
+    MatSelectModule,
+    MatInputModule,
+    MatFormFieldModule,
+    FormsModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]

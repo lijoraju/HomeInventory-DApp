@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Item</title>
+    <script src="contractConfig.js"></script>
+</head>
+
+<body>
+    <h1>Add Item</h1>
+
+    <form id="createItemForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required><br><br>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" required><br><br>
+
+        <label for="purchaseDate">Purchase Date:</label>
+        <input type="date" id="purchaseDate" required><br><br>
+
+        <label for="purchasePrice">Purchase Price:</label>
+        <input type="number" id="purchasePrice" required><br><br>
+
+        <label for="category">Category:</label>
+        <input type="text" id="category" required><br><br>
+
+        <label for="model">Model:</label>
+        <input type="text" id="model" required><br><br>
+
+        <label for="serialNumber">Serial Number:</label>
+        <input type="text" id="serialNumber" required><br><br>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" required><br><br>
+
+        <label for="condition">Condition:</label>
+        <input type="text" id="condition" required><br><br>
+
+        <button id="cancelButton">Cancel</button>
+        <button type="submit">Add</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.0/dist/web3.min.js"></script>
+    <script>
+        // cancel button event
+        document.getElementById('cancelButton').addEventListener('click', () => {
+            window.location.href = 'index.html'; // Navigate to the home page
+        });
+
+        const web3 = new Web3(Web3.givenProvider);
+
+        // Initialize contract instance
+        const contractInstance = new web3.eth.Contract(window.contractConfig.contractABI, window.contractConfig.contractAddress);
+
+        document.getElementById('createItemForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const description = document.getElementById('description').value;
+            const purchaseDate = new Date(document.getElementById('purchaseDate').value).getTime() / 1000;
+            const purchasePrice = web3.utils.toWei(document.getElementById('purchasePrice').value, 'ether');
+            const category = document.getElementById('category').value;
+            const model = document.getElementById('model').value;
+            const serialNumber = document.getElementById('serialNumber').value;
+            const location = document.getElementById('location').value;
+            const condition = document.getElementById('condition').value;
+
+            try {
+                const accounts = await web3.eth.getAccounts();
+                console.log('Accounts:', accounts);
+
+                if (accounts.length === 0) {
+                    console.log('No Ethereum accounts found.');
+                    return;
+                }
+
+                await contractInstance.methods.createItem(name, description, purchaseDate, purchasePrice, category, model, serialNumber, location, condition)
+                    .send({ from: accounts[0] });
+
+                console.log('Item created successfully');
+            } catch (error) {
+                console.error('Error creating item:', error);
+            }
+            // try {
+            //     const accounts = await web3.eth.getAccounts();
+            //     console.log(accounts.length);
+            //     await contractInstance.methods.createItem(name, description, purchaseDate, purchasePrice, category, model, serialNumber, location, condition)
+            //         .send({ from: accounts[0] });
+
+            //     console.log('Item created successfully');
+            // } catch (error) {
+            //     console.error('Error creating item:', error);
+            // }
+        });
+    </script>
+</body>
+
+</html>

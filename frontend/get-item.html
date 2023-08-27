@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Item</title>
+    <script src="contractConfig.js"></script>
+</head>
+
+<body>
+    <h1>Get Item</h1>
+
+    <form id="getItemForm">
+        <label for="itemId">Item ID:</label>
+        <input type="number" id="itemId" required><br><br>
+
+        <button type="submit">Get Item</button>
+    </form>
+
+    <div id="itemDetails" style="display: none;">
+        <h2>Item Details</h2>
+        <div id="itemDetailsList"></div>
+    </div>
+
+    <div id="error" style="display: none; color: red;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.0/dist/web3.min.js"></script>
+    <script>
+        const web3 = new Web3(Web3.givenProvider);
+
+        // Initialize contract instance
+        const contractInstance = new web3.eth.Contract(window.contractConfig.contractABI, window.contractConfig.contractAddress);
+
+        document.getElementById('getItemForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const itemId = document.getElementById('itemId').value;
+
+            try {
+                const item = await contractInstance.methods.getItem(itemId).call();
+
+                // Display item details in key-value pair format
+                const itemDetailsList = document.getElementById('itemDetailsList');
+                itemDetailsList.innerHTML = '';
+
+                for (const key in item) {
+                    const listItem = document.createElement('p');
+                    listItem.textContent = `${key}: ${item[key]}`;
+                    itemDetailsList.appendChild(listItem);
+                }
+
+                // Show the item details section
+                document.getElementById('itemDetails').style.display = 'block';
+                // Hide the error section if previously shown
+                document.getElementById('error').style.display = 'none';
+            } catch (error) {
+                // Display error message
+                document.getElementById('error').textContent = `Error: ${error}`;
+                document.getElementById('error').style.display = 'block';
+                // Hide the item details section
+                document.getElementById('itemDetails').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

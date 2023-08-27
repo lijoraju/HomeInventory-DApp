@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ownership History</title>
+    <style>
+        .tree {
+            padding-left: 20px;
+        }
+    </style>
+    <script src="contractConfig.js"></script>
+</head>
+
+<body>
+    <h1>Ownership History</h1>
+
+    <form id="ownershipHistoryForm">
+        <label for="itemId">Item ID:</label>
+        <input type="number" id="itemId" required><br><br>
+
+        <button type="submit">Get Ownership History</button>
+    </form>
+
+    <div id="ownershipHistoryTree" style="display: none;">
+        <h2>Ownership History</h2>
+        <ul id="tree" class="tree"></ul>
+    </div>
+
+    <div id="error" style="display: none; color: red;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.0/dist/web3.min.js"></script>
+    <script>
+        const web3 = new Web3(Web3.givenProvider);
+
+        // Initialize contract instance
+        const contractInstance = new web3.eth.Contract(window.contractConfig.contractABI, window.contractConfig.contractAddress);
+
+        document.getElementById('ownershipHistoryForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const itemId = document.getElementById('itemId').value;
+
+            try {
+                const ownershipHistory = await contractInstance.methods.getOwnershipHistory(itemId).call();
+
+                const tree = document.getElementById('tree');
+                tree.innerHTML = '';
+                generateOwnershipTree(ownershipHistory, tree);
+
+                // Show the ownership history tree and hide the error section
+                document.getElementById('ownershipHistoryTree').style.display = 'block';
+                document.getElementById('error').style.display = 'none';
+            } catch (error) {
+                // Display error message
+                document.getElementById('error').textContent = `Error: ${error}`;
+                document.getElementById('error').style.display = 'block';
+                // Hide the ownership history tree
+                document.getElementById('ownershipHistoryTree').style.display = 'none';
+            }
+        });
+
+        function generateOwnershipTree(history, parentElement) {
+            history.forEach(entry => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${entry.from} transferred ownership to ${entry.to}`;
+                parentElement.appendChild(listItem);
+
+                if (entry.children && entry.children.length > 0) {
+                    const childList = document.createElement('ul');
+                    listItem.appendChild(childList);
+                    generateOwnershipTree(entry.children, childList);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

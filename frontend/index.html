@@ -2,127 +2,103 @@
 <html lang="en">
 
 <head>
-    <!-- ... Head content ... -->
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to HomeInventory App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #8234db;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #222;
+            padding: 0.5rem 0;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+    </style>
 </head>
 
 <body>
     <header>
-        <div class="header-container">
-            <h1>Home Inventory DApp</h1>
-            <p>Your Personal Inventory Management</p>
-        </div>
+        <h1>Welcome to HomeInventory DApp</h1>
+        <a href="https://github.com/lijoraju/HomeInventory-DApp" target="_blank">
+            <img src="github-mark.png" alt="GitHub Repo" width="32" height="32">
+        </a>
     </header>
-    <main>
-        <div class="tabs">
-            <button class="tab-button active" data-tab="add-item">Add Item</button>
-            <button class="tab-button" data-tab="update-item">Update Item</button>
-            <button class="tab-button" data-tab="list-items">List My Items</button>
-            <button class="tab-button" data-tab="check-ownership">Check Ownership</button>
-            <button class="tab-button" data-tab="transfer-ownership">Transfer Ownership</button>
-        </div>
-        <section id="add-item-section" class="tab-content">
-            <h2>Add Item</h2>
-            <form id="add-item-form">
-                <label for="name">Name:</label>
-                <input type="text" id="name" required>
 
-                <label for="description">Description:</label>
-                <input type="text" id="description" required>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="create-item.html">Add Item</a>
+        <a href="update-item.html">Update Item</a>
+        <a href="get-item.html">Item Details</a>
+        <a href="get-my-items.html">My Items</a>
+        <a href="transfer-ownership.html">Transfer Ownership</a>
+        <a href="get-ownership-history.html">Ownership History</a>
+        <a href="start-auction.html">Start Auction</a>
+        <a href="place-bid.html">Place Bid</a>
+        <a href="get-auction-details.html">Auction Details</a>
+        <a href="get-auction-items.html">Auction Items</a>
+        <a href="api.html">API</a>
+    </nav>
 
-                <label for="purchase-date">Purchase Date:</label>
-                <input type="date" id="purchase-date" required>
+    <div class="container">
+        <h2>About HomeInventory DApp</h2>
+        <p>
+            HomeInventory DApp is a decentralized application built on the blockchain technology and web3.0 that allows
+            you to manage and
+            participate in auctions for various items. You can start auctions, place bids, get auction details, and
+            more.
+        </p>
 
-                <label for="purchase-price">Purchase Price:</label>
-                <input type="number" id="purchase-price" required>
+        <h2>How to Use the DApp</h2>
+        <p>
+            To use the HomeInventory DApp, simply navigate to the respective pages using the navigation links above.
+            Follow the instructions on each page to interact with the HomeInventory smart contract on the blockchain.
+        </p>
 
-                <label for="category">Category:</label>
-                <input type="text" id="category" required>
-
-                <label for="model">Model:</label>
-                <input type="text" id="model" required>
-
-                <label for="serial-number">Serial Number:</label>
-                <input type="text" id="serial-number" required>
-
-                <label for="location">Location:</label>
-                <input type="text" id="location" required>
-
-                <label for="condition">Condition:</label>
-                <input type="text" id="condition" required>
-
-                <button type="submit">Add Item</button>
-            </form>
-        </section>
-        <section id="update-item-section" class="tab-content">
-            <h2>Update Item</h2>
-            <form id="update-item-form">
-                <label for="update-index">Item Index:</label>
-                <input type="number" id="update-index" required>
-
-                <label for="new-name">New Name:</label>
-                <input type="text" id="new-name">
-
-                <label for="new-description">New Description:</label>
-                <input type="text" id="new-description">
-
-                <!-- Add input fields for other properties to update -->
-
-                <button type="submit">Update Item</button>
-            </form>
-        </section>
-        <section id="list-items-section" class="tab-content">
-            <h2>My Items</h2>
-            <table id="items-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Purchase Date</th>
-                        <th>Purchase Price</th>
-                        <th>Category</th>
-                        <th>Model</th>
-                        <th>Serial Number</th>
-                        <th>Location</th>
-                        <th>Condition</th>
-                    </tr>
-                </thead>
-                <tbody id="items-table-body">
-                    <!-- Populated dynamically by JavaScript -->
-                </tbody>
-            </table>
-        </section>
-        <section id="check-ownership-section" class="tab-content">
-            <h2>Check Ownership</h2>
-            <form id="check-ownership-form">
-                <label for="check-input">Enter Item Serial Number or Item ID:</label>
-                <input type="text" id="check-input" required>
-
-                <button type="submit">Check Ownership</button>
-            </form>
-            <div id="ownership-result"></div>
-        </section>
-        <section id="transfer-ownership-section" class="tab-content">
-            <h2>Transfer Ownership</h2>
-            <form id="transfer-ownership-form">
-                <label for="transfer-item-id">Enter Item ID:</label>
-                <input type="number" id="transfer-item-id" required>
-        
-                <label for="recipient-address">Recipient Address:</label>
-                <input type="text" id="recipient-address" required>
-        
-                <button type="submit">Transfer Ownership</button>
-            </form>
-            <div id="transfer-ownership-result">
-                <h3>Transfer Details</h3>
-                <p id="transfer-details"></p>
-            </div>
-        </section>               
-    </main>
-    <footer>
-        <p>&copy; 2023 Your Home Inventory DApp</p>
-    </footer>
-    <script src="app.js"></script>
+        <h2>Requirements</h2>
+        <p>
+            To use this DApp, you need to have the MetaMask extension installed in your web browser. Make sure you have
+            an Ethereum account and some Ether for interacting with the blockchain.
+        </p>
+    </div>
 </body>
 
 </html>

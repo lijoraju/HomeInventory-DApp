@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Item</title>
+    <script src="contractConfig.js"></script>
+</head>
+
+<body>
+    <h1>Update Item</h1>
+
+    <form id="getItemForm">
+        <label for="itemId">Item ID:</label>
+        <input type="number" id="itemId" required><br><br>
+
+        <button type="submit">Get Item</button>
+    </form>
+
+    <div id="itemDetails" style="display: none;">
+        <h2>Item Details</h2>
+        <form id="updateItemForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required><br><br>
+
+            <label for="description">Description:</label>
+            <input type="text" id="description" required><br><br>
+
+            <label for="purchaseDate">Purchase Date:</label>
+            <input type="date" id="purchaseDate" required><br><br>
+
+            <label for="purchasePrice">Purchase Price:</label>
+            <input type="number" id="purchasePrice" step="0.01" required><br><br>
+
+            <label for="category">Category:</label>
+            <input type="text" id="category" required><br><br>
+
+            <label for="model">Model:</label>
+            <input type="text" id="model" required><br><br>
+
+            <label for="serialNumber">Serial Number:</label>
+            <input type="text" id="serialNumber" required><br><br>
+
+            <label for="location">Location:</label>
+            <input type="text" id="location" required><br><br>
+
+            <label for="condition">Condition:</label>
+            <input type="text" id="condition" required><br><br>
+
+            <button type="button" id="cancelUpdate">Cancel</button>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+
+    <div id="error" style="display: none; color: red;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.0/dist/web3.min.js"></script>
+    <script>
+        const web3 = new Web3(Web3.givenProvider);
+
+        // Initialize contract instance
+        const contractInstance = new web3.eth.Contract(window.contractConfig.contractABI, window.contractConfig.contractAddress);
+
+        document.getElementById('getItemForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const itemId = document.getElementById('itemId').value;
+
+            try {
+                const item = await contractInstance.methods.getItem(itemId).call();
+
+                // Populate the update form with item details
+                document.getElementById('name').value = item.name;
+                document.getElementById('description').value = item.description;
+                document.getElementById('purchaseDate').value = new Date(item.purchaseDate * 1000).toISOString().split('T')[0];
+                document.getElementById('purchasePrice').value = web3.utils.fromWei(item.purchasePrice, 'ether');
+                document.getElementById('category').value = item.category;
+                document.getElementById('model').value = item.model;
+                document.getElementById('serialNumber').value = item.serialNumber;
+                document.getElementById('location').value = item.location;
+                document.getElementById('condition').value = item.condition;
+
+                // Show the item details section
+                document.getElementById('itemDetails').style.display = 'block';
+                // Hide the error section if previously shown
+                document.getElementById('error').style.display = 'none';
+            } catch (error) {
+                // Display error message
+                document.getElementById('error').textContent = `Error: ${error}`;
+                document.getElementById('error').style.display = 'block';
+                // Hide the item details section
+                document.getElementById('itemDetails').style.display = 'none';
+            }
+        });
+
+        document.getElementById('cancelUpdate').addEventListener('click', () => {
+            // Clear the form and hide the item details section
+            document.getElementById('updateItemForm').reset();
+            document.getElementById('itemDetails').style.display = 'none';
+        });
+
+        document.getElementById('updateItemForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const itemId = document.getElementById('itemId').value;
+            const name = document.getElementById('name').value;
+            const description = document.getElementById('description').value;
+            const purchaseDate = new Date(document.getElementById('purchaseDate').value).getTime() / 1000;
+            const purchasePrice = web3.utils.toWei(document.getElementById('purchasePrice').value, 'ether');
+            const category = document.getElementById('category').value;
+            const model = document.getElementById('model').value;
+            const serialNumber = document.getElementById('serialNumber').value;
+            const location = document.getElementById('location').value;
+            const condition = document.getElementById('condition').value;
+
+            try {
+                const accounts = await web3.eth.getAccounts();
+                await contractInstance.methods.updateItem(itemId, name, description, purchaseDate, purchasePrice, category, model, serialNumber, location, condition)
+                    .send({ from: accounts[0] });
+
+                console.log('Item updated successfully');
+            } catch (error) {
+                console.error('Error updating item:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Auction Details</title>
+    <script src="contractConfig.js"></script>
+</head>
+
+<body>
+    <h1>Get Auction Details</h1>
+
+    <form id="getAuctionDetailsForm">
+        <label for="itemIdDetails">Item ID:</label>
+        <input type="number" id="itemIdDetails" required><br><br>
+
+        <button type="submit">Get Auction Details</button>
+    </form>
+
+    <div id="auctionDetails" style="display: none;">
+        <h2>Auction Details</h2>
+        <ul id="auctionDetailsList"></ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.0/dist/web3.min.js"></script>
+    <script>
+        const web3 = new Web3(Web3.givenProvider);
+
+        // Initialize contract instance
+        const contractInstance = new web3.eth.Contract(window.contractConfig.contractABI, window.contractConfig.contractAddress);
+
+        document.getElementById('getAuctionDetailsForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const itemIdDetails = document.getElementById('itemIdDetails').value;
+
+            try {
+                const auctionDetails = await contractInstance.methods.getAuctionDetails(itemIdDetails).call();
+
+                // Display auction details in key-value format
+                const auctionDetailsList = document.getElementById('auctionDetailsList');
+                auctionDetailsList.innerHTML = '';
+
+                for (const key in auctionDetails) {
+                    const value = auctionDetails[key];
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${key}: ${value}`;
+                    auctionDetailsList.appendChild(listItem);
+                }
+
+                // Show the auction details section
+                document.getElementById('auctionDetails').style.display = 'block';
+            } catch (error) {
+                console.error('Error getting auction details:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>

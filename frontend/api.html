@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeInventory Smart Contract API Documentation</title>
+    <style>
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>HomeInventory Smart Contract API Documentation</h1>
+    </header>
+
+    <div class="container">
+        <h2>Smart Contract Functions</h2>
+
+        <!-- createItem -->
+        <h3>createItem</h3>
+        <p>Create a new item in the inventory.</p>
+        <h4>Function Signature</h4>
+        <pre><code>function createItem(
+    string memory _name,
+    string memory _description,
+    uint256 _purchaseDate,
+    uint256 _purchasePrice,
+    string memory _category,
+    string memory _model,
+    string memory _serialNumber,
+    string memory _location,
+    string memory _condition
+) external onlyOwner</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><code>_name</code>: Name of the item.</li>
+            <li><code>_description</code>: Description of the item.</li>
+            <li><code>_purchaseDate</code>: Purchase date of the item (UNIX timestamp).</li>
+            <li><code>_purchasePrice</code>: Purchase price of the item (in wei).</li>
+            <li><code>_category</code>: Category of the item.</li>
+            <li><code>_model</code>: Model of the item.</li>
+            <li><code>_serialNumber</code>: Serial number of the item.</li>
+            <li><code>_location</code>: Location of the item.</li>
+            <li><code>_condition</code>: Condition of the item.</li>
+        </ul>
+        <h4>Outputs</h4>
+        <p>No direct outputs. The item is created and stored in the contract.</p>
+        <h4>Example</h4>
+        <pre><code>// Assuming you have a contract instance and connected web3
+
+const itemName = "Laptop";
+const itemDescription = "High-performance laptop";
+const purchaseDate = Math.floor(Date.now() / 1000); // Current timestamp
+const purchasePrice = web3.utils.toWei("1000", "ether"); // Convert ETH to wei
+const category = "Electronics";
+const model = "XYZ123";
+const serialNumber = "ABC123";
+const location = "Home Office";
+const condition = "New";
+
+await contractInstance.methods.createItem(
+    itemName,
+    itemDescription,
+    purchaseDate,
+    purchasePrice,
+    category,
+    model,
+    serialNumber,
+    location,
+    condition
+).send({ from: accounts[0] });</code></pre>
+
+        <!-- updateItem -->
+        <h3>updateItem</h3>
+        <p>Update details of an existing item.</p>
+        <h4>Function Signature</h4>
+        <pre><code>function updateItem(
+    uint256 _id,
+    string memory _name,
+    string memory _description,
+    uint256 _purchaseDate,
+    uint256 _purchasePrice,
+    string memory _category,
+    string memory _model,
+    string memory _serialNumber,
+    string memory _location,
+    string memory _condition
+) external onlyOwner</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><code>_id</code>: ID of the item to update.</li>
+            <li><code>_name</code>: Updated name of the item.</li>
+            <li><code>_description</code>: Updated description of the item.</li>
+            <li><code>_purchaseDate</code>: Updated purchase date of the item (UNIX timestamp).</li>
+            <li><code>_purchasePrice</code>: Updated purchase price of the item (in wei).</li>
+            <li><code>_category</code>: Updated category of the item.</li>
+            <li><code>_model</code>: Updated model of the item.</li>
+            <li><code>_serialNumber</code>: Updated serial number of the item.</li>
+            <li><code>_location</code>: Updated location of the item.</li>
+            <li><code>_condition</code>: Updated condition of the item.</li>
+        </ul>
+        <h4>Outputs</h4>
+        <p>No direct outputs. The item's details are updated in the contract.</p>
+        <h4>Example</h4>
+        <pre><code>// Assuming you have a contract instance and connected web3
+
+const itemIdToUpdate = 1; // ID of the item to update
+const updatedName = "Updated Laptop";
+const updatedDescription = "High-performance laptop with new features";
+const updatedPurchaseDate = Math.floor(Date.now() / 1000); // Current timestamp
+const updatedPurchasePrice = web3.utils.toWei("1200", "ether"); // Convert ETH to wei
+const updatedCategory = "Electronics";
+const updatedModel = "XYZ456";
+const updatedSerialNumber = "ABC123";
+const updatedLocation = "Home Office";
+const updatedCondition = "Used";
+
+await contractInstance.methods.updateItem(
+    itemIdToUpdate,
+    updatedName,
+    updatedDescription,
+    updatedPurchaseDate,
+    updatedPurchasePrice,
+    updatedCategory,
+    updatedModel,
+    updatedSerialNumber,
+    updatedLocation,
+    updatedCondition
+).send({ from: accounts[0] });</code></pre>
+
+        <!-- getMyItems -->
+        <h3>getMyItems</h3>
+        <p>Retrieve items owned by the caller.</p>
+        <h4>Function Signature</h4>
+        <pre><code>function getMyItems() external view returns (Item[] memory)</code></pre>
+        <h4>Outputs</h4>
+        <p>Returns an array of <code>Item</code> structs representing items owned by the caller.</p>
+        <h4>Example</h4>
+        <pre><code>// Assuming you have a contract instance and connected web3
+
+const ownedItems = await contractInstance.methods.getMyItems().call();
+console.log(ownedItems);</code></pre>
+        <h4>Item Structure</h4>
+        <ul>
+            <li><code>name</code>: Name of the item.</li>
+            <li><code>description</code>: Description of the item.</li>
+            <li><code>purchaseDate</code>: Purchase date of the item (UNIX timestamp).</li>
+            <li><code>purchasePrice</code>: Purchase price of the item (in wei).</li>
+            <li><code>category</code>: Category of the item.</li>
+            <li><code>model</code>: Model of the item.</li>
+            <li><code>serialNumber</code>: Serial number of the item.</li>
+            <li><code>location</code>: Location of the item.</li>
+            <li><code>condition</code>: Condition of the item.</li>
+            <li><code>owner</code>: Address of the item's current owner.</li>
+            <li><code>id</code>: ID of the item.</li>
+        </ul>
+
+        <!-- getItem -->
+        <h3>getItem</h3>
+        <p>Retrieve details of an item by its ID.</p>
+        <h4>Function Signature</h4>
+        <pre><code>function getItem(uint256 _id) external view returns (Item memory)</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><code>_id</code>: ID of the item to retrieve.</li>
+        </ul>
+        <h4>Outputs</h4>
+        <p>Returns an <code>Item</code> struct representing the details of the requested item.</p>
+        <h4>Example</h4>
+        <pre><code>// Assuming you have a contract instance and connected web3
+
+const itemIdToRetrieve = 1; // ID of the item to retrieve
+const itemDetails = await contractInstance.methods.getItem(itemIdToRetrieve).call();
+console.log(itemDetails);</code></pre>
+        <h4>Item Structure</h4>
+        <ul>
+            <li><code>name</code>: Name of the item.</li>
+            <li><code>description</code>: Description of the item.</li>
+            <li><code>purchaseDate</code>: Purchase date of the item (UNIX timestamp).</li>
+            <li><code>purchasePrice</code>: Purchase price of the item (in wei).</li>
+            <li><code>category</code>: Category of the item.</li>
+            <li><code>model</code>: Model of the item.</li>
+            <li><code>serialNumber</code>: Serial number of the item.</li>
+            <li><code>location</code>: Location of the item.</li>
+            <li><code>condition</code>: Condition of the item.</li>
+            <li><code>owner</code>: Address of the item's current owner.</li>
+            <li><code>id</code>: ID of the item.</li>
+        </ul>
+
+        <!-- transferOwnership -->
+        <h3>transferOwnership</h3>
+        <p>Transfer ownership of an item to a new owner.</p>
+        <h4>Function Signature</h4>
+        <pre><code>function transferOwnership(uint256 _id, address _newOwner) external</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><code>_id</code>: ID of the item to transfer ownership of.</li>
+            <li><code>_newOwner</code>: Address of the new owner.</li>
+        </ul>
+        <h4>Outputs</h4>
+        <p>No direct outputs. Ownership of the item is transferred to the new owner.</p>
+        <h4>Example</h4>
+        <pre><code>// Assuming you have a contract instance and connected web3
+
+const itemIdToTransfer = 1; // ID of the item to transfer ownership
+const newOwnerAddress = "0x1234567890123456789012345678901234567890"; // Address of the new owner
+
+await contractInstance.methods.transferOwnership(itemIdToTransfer, newOwnerAddress).send({ from: accounts[0] });</code></pre>
+
+        <!-- getOwnershipHistory -->
+        <h3>getOwnershipHistory</h3>
+        <p>Retrieve the ownership history of an item.</p>
+        <h4>Function Signature</h4>
+        <pre><code>function getOwnershipHistory(uint256 _id) external view returns (address[] memory)</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><code>_id</code>: ID of the item to retrieve ownership history for.</li>
+        </ul>
+        <h4>Outputs</h4>
+        <p>Returns an array of addresses representing the historical owners of the item.</p>
+        <h4>Example</h4>
+        <pre><code>// Assuming you have a contract instance and connected web3
+
+const itemIdToRetrieveHistoryFor = 1; // ID of the item to retrieve ownership history
+const ownershipHistory = await contractInstance.methods.getOwnershipHistory(itemIdToRetrieveHistoryFor).call();
+console.log(ownershipHistory);</code></pre>
+
+        <!-- startAuction -->
+        <h3>startAuction</h3>
+        <p>Start an auction for an item.</p>
+        <h4>Function Signature</h4>
+        <pre><code>function startAuction(uint256 _itemId, uint256 _basePrice, uint256 _durationInHours) external onlyOwner</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><code>_itemId</code>: ID of the item to start the auction for.</li>
+            <li><code>_basePrice</code>: Base price of the auction (in wei).</li>
+            <li><code>_durationInHours</code>: Duration of the auction in hours.</li>
+        </ul>
+        <h4>Outputs</h4>
+        <p>No direct outputs. An auction is started for the specified item.</p>
+        <h4>Example</h4>
+        <pre><code>// Assuming you have a contract instance and connected web3
+
+const itemIdToStartAuctionFor = 1; // ID of the item to start the auction for
+const basePrice = web3.utils.toWei("100", "ether"); // Convert ETH to wei
+const auctionDurationInHours = 24; // Duration of the auction in hours
+
+await contractInstance.methods.startAuction(itemIdToStartAuctionFor, basePrice, auctionDurationInHours).send({ from: accounts[0] });</code></pre>
+
+        <!-- placeBid -->
+        <h3>placeBid</h3>
+        <p>Place a bid in an ongoing auction.</p>
+        <h4>Function Signature</h4>
+        <pre><code>function placeBid(uint256 _itemId, uint256 _bidAmount) external payable</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><code>_itemId</code>: ID of the item in the auction.</li>
+            <li><code>_bidAmount</code>: Bid amount in wei.</li>
+        </ul>
+        <h4>Outputs</h4>
+        <p>No direct outputs. A bid is placed in the auction for the specified item.</p>
+        <h4>Example</h4>
+        <pre><code>// Assuming you have a contract instance and connected web3
+
+const itemIdToPlaceBidFor = 1; // ID of the item to place a bid for
+const bidAmount = web3.utils.toWei("150", "ether"); // Convert ETH to wei
+
+await contractInstance.methods.placeBid(itemIdToPlaceBidFor, bidAmount).send({ from: accounts[1], value: bidAmount });</code></pre>
+
+        <!-- getAuctionDetails -->
+        <h3>getAuctionDetails</h3>
+        <p>Get details of an ongoing auction.</p>
+        <h4>Function Signature</h4>
+        <pre><code>function getAuctionDetails(uint256 _itemId) external view returns (Auction memory)</code></pre>
+        <h4>Parameters</h4>
+        <ul>
+            <li><code>_itemId</code>: ID of the item in the auction.</li>
+        </ul>
+        <h4>Outputs</h4>
+        <p>Returns an <code>Auction</code> struct containing details of the ongoing auction for the specified item.</p>
+        <h4>Example</h4>
+        <pre><code>// Assuming you have a contract instance and connected web3
+
+const itemIdToGetAuctionDetailsFor = 1; // ID of the item to get auction details for
+
+const auctionDetails = await contractInstance.methods.getAuctionDetails(itemIdToGetAuctionDetailsFor).call();
+console.log(auctionDetails);</code></pre>
+
+        <!-- getAuctionItems -->
+        <h3>getAuctionItems</h3>
+        <p>Get details of active auction items.</p>
+        <h4>Function Signature</h4>
+        <pre><code>function getAuctionItems() external view returns (Auction[] memory)</code></pre>
+        <h4>Parameters</h4>
+        <p>No parameters required.</p>
+        <h4>Outputs</h4>
+        <p>Returns an array of <code>Auction</code> structs representing active auction items.</p>
+        <h4>Example</h4>
+        <pre><code>// Assuming you have a contract instance and connected web3
+
+const activeAuctionItems = await contractInstance.methods.getAuctionItems().call();
+console.log(activeAuctionItems);</code></pre>
+    </div>
+</body>
+
+</html>

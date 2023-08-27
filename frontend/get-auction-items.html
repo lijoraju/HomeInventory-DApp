@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Auction Items</title>
+    <script src="contractConfig.js"></script>
+</head>
+
+<body>
+    <h1>Get Auction Items</h1>
+
+    <button id="fetchAuctionItems">Fetch Auction Items</button>
+
+    <div id="auctionItems" style="display: none;">
+        <h2>Auction Items</h2>
+        <table id="auctionItemsTable">
+            <thead>
+                <tr>
+                    <th>Item ID</th>
+                    <th>Highest Bidder</th>
+                    <th>Highest Bid (ETH)</th>
+                    <th>Base Price (ETH)</th>
+                    <th>End Time</th>
+                    <th>Deposited Amount (ETH)</th>
+                    <th>Auto Renew</th>
+                    <th>Start Time</th>
+                </tr>
+            </thead>
+            <tbody id="auctionItemsTableBody"></tbody>
+        </table>
+    </div>
+
+    <div id="error" style="display: none; color: red;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.0/dist/web3.min.js"></script>
+    <script>
+        const web3 = new Web3(Web3.givenProvider);
+
+        // Initialize contract instance
+        const contractInstance = new web3.eth.Contract(window.contractConfig.contractABI, window.contractConfig.contractAddress);
+
+        document.getElementById('fetchAuctionItems').addEventListener('click', async () => {
+            try {
+                const auctionItems = await contractInstance.methods.getAuctionItems().call();
+
+                // Display auction items in tabular form
+                const auctionItemsTableBody = document.getElementById('auctionItemsTableBody');
+                auctionItemsTableBody.innerHTML = '';
+
+                auctionItems.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.itemId}</td>
+                        <td>${item.highestBidder}</td>
+                        <td>${web3.utils.fromWei(item.highestBid, 'ether')}</td>
+                        <td>${web3.utils.fromWei(item.basePrice, 'ether')}</td>
+                        <td>${new Date(item.endTime * 1000).toLocaleString()}</td>
+                        <td>${web3.utils.fromWei(item.depositedAmount, 'ether')}</td>
+                        <td>${item.autoRenew}</td>
+                        <td>${new Date(item.startTime * 1000).toLocaleString()}</td>
+                    `;
+                    auctionItemsTableBody.appendChild(row);
+                });
+
+                // Show the auction items section
+                document.getElementById('auctionItems').style.display = 'block';
+                // Hide the error section if previously shown
+                document.getElementById('error').style.display = 'none';
+            } catch (error) {
+                // Display error message
+                document.getElementById('error').textContent = `Error: ${error}`;
+                document.getElementById('error').style.display = 'block';
+                // Hide the auction items section
+                document.getElementById('auctionItems').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get My Items</title>
+    <script src="contractConfig.js"></script>
+</head>
+
+<body>
+    <h1>Get My Items</h1>
+
+    <button id="getMyItemsButton">Get My Items</button>
+
+    <div id="itemsTable" style="display: none;">
+        <h2>My Items</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Purchase Date</th>
+                    <th>Purchase Price (ETH)</th>
+                    <th>Category</th>
+                    <th>Model</th>
+                    <th>Serial Number</th>
+                    <th>Location</th>
+                    <th>Condition</th>
+                </tr>
+            </thead>
+            <tbody id="itemsTableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div id="error" style="display: none; color: red;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.0/dist/web3.min.js"></script>
+    <script>
+        const web3 = new Web3(Web3.givenProvider);
+
+        // Initialize contract instance
+        const contractInstance = new web3.eth.Contract(window.contractConfig.contractABI, window.contractConfig.contractAddress);
+
+        document.getElementById('getMyItemsButton').addEventListener('click', async () => {
+            try {
+                const accounts = await web3.eth.getAccounts();
+                const myItems = await contractInstance.methods.getMyItems().call({ from: accounts[0] });
+
+                const itemsTableBody = document.getElementById('itemsTableBody');
+                itemsTableBody.innerHTML = '';
+
+                if (myItems.length === 0) {
+                    itemsTableBody.innerHTML = '<tr><td colspan="10">No items found.</td></tr>';
+                } else {
+                    myItems.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.id}</td>
+                            <td>${item.name}</td>
+                            <td>${item.description}</td>
+                            <td>${new Date(item.purchaseDate * 1000).toLocaleDateString()}</td>
+                            <td>${web3.utils.fromWei(item.purchasePrice, 'ether')}</td>
+                            <td>${item.category}</td>
+                            <td>${item.model}</td>
+                            <td>${item.serialNumber}</td>
+                            <td>${item.location}</td>
+                            <td>${item.condition}</td>
+                        `;
+                        itemsTableBody.appendChild(row);
+                    });
+                }
+
+                // Show the items table and hide the error section
+                document.getElementById('itemsTable').style.display = 'block';
+                document.getElementById('error').style.display = 'none';
+            } catch (error) {
+                // Display error message
+                document.getElementById('error').textContent = `Error: ${error}`;
+                document.getElementById('error').style.display = 'block';
+                // Hide the items table
+                document.getElementById('itemsTable').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

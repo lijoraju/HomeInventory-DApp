@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Ownership</title>
+    <script src="contractConfig.js"></script>
+</head>
+
+<body>
+    <h1>Transfer Ownership</h1>
+
+    <form id="transferOwnershipForm">
+        <label for="itemId">Item ID:</label>
+        <input type="number" id="itemId" required><br><br>
+
+        <label for="newOwner">New Owner Address:</label>
+        <input type="text" id="newOwner" required><br><br>
+
+        <button type="submit">Transfer Ownership</button>
+    </form>
+
+    <div id="error" style="display: none; color: red;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.0/dist/web3.min.js"></script>
+    <script>
+        const web3 = new Web3(Web3.givenProvider);
+
+        // Initialize contract instance
+        const contractInstance = new web3.eth.Contract(window.contractConfig.contractABI, window.contractConfig.contractAddress);
+
+        document.getElementById('transferOwnershipForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const itemId = document.getElementById('itemId').value;
+            const newOwner = document.getElementById('newOwner').value;
+
+            try {
+                const accounts = await web3.eth.getAccounts();
+                await contractInstance.methods.transferOwnership(itemId, newOwner)
+                    .send({ from: accounts[0] });
+
+                console.log('Ownership transferred successfully');
+                // Clear input fields
+                document.getElementById('itemId').value = '';
+                document.getElementById('newOwner').value = '';
+                // Hide the error section if previously shown
+                document.getElementById('error').style.display = 'none';
+            } catch (error) {
+                // Display error message
+                document.getElementById('error').textContent = `Error: ${error}`;
+                document.getElementById('error').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>
